@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\.github",
+    "\\dist",
+    "\\dist\\assets",
+    "\\src"
+  ],
+  "SelectedNode": "\\src\\game.ts",
+  "PreviewInSolutionExplorer": false
+}
