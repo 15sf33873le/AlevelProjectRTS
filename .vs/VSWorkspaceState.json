@@ -1,11 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\.github",
     "\\dist",
     "\\dist\\assets",
     "\\src"
   ],
-  "SelectedNode": "\\src\\config.ts",
+  "SelectedNode": "\\dist\\assets\\starfields.glsl.js",
   "PreviewInSolutionExplorer": false
 }
