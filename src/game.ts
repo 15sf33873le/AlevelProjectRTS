@@ -1,13 +1,23 @@
 import 'phaser';
-import config from './config';
+import GameConfig from './config';
 import LoadingScene from './LoadingScene';
+import MenuScene from './MenuScene';
+import ControlsScene from './ControlsScene';
+import GameRun from './GameRun';
 
 class Game extends Phaser.Game {
-	constructor(config) {
-		super(config);
+	constructor(GameConfig) {
+		super(GameConfig);
+
+		//add scenes
 		this.scene.add('Loading', LoadingScene);
+		this.scene.add('Menu', MenuScene);
+		this.scene.add('Controls', ControlsScene);
+		this.scene.add('GameRun', GameRun);
+
+		//start loading the game
 		this.scene.start('Loading');
 	}
 }
 
-const game = new Game(config);
+const game = new Game(GameConfig);

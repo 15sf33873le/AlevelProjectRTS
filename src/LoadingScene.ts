@@ -17,11 +17,23 @@ export default class LoadingScene extends Phaser.Scene {
 	}
 
 	preload() {
+
+		let width = this.cameras.main.width;
+		let height = this.cameras.main.height;
 		
+		//load menu graphics
+		this.load.image('StartButton', 'assets/start-button.png');
+		this.load.image('SettingsButton', 'assets/settings-button.png');
+		this.load.image('ControlsButton', 'assets/controls-button.png');
+
+		//load controls graphics
+		this.load.image('ControlsHelp', 'assets/controls-help.png');
+		this.load.image('x', 'assets/x.png');
+
 		//load the phaser3 logo a bunch of times to simulate loading
 		this.load.image('test', 'assets/libs.png');
 		this.load.image('logo', 'assets/phaser3-logo.png');
-		for (let i = 0; i < 500; i++) {
+		for (let i = 0; i < 100; i++) {
 			this.load.image('logo'+i, 'assets/phaser3-logo.png');
 		}
 		
@@ -29,11 +41,9 @@ export default class LoadingScene extends Phaser.Scene {
 		let progressBar = this.add.graphics();
 		let progressBox = this.add.graphics();
 		progressBox.fillStyle(0x222222, 0.8);
-		progressBox.fillRect(240, 270, 320, 50);
+		progressBox.fillRect((width/2) -160, (height/2) - 30, 320, 50);
 
 		//add loading... text
-		let width = this.cameras.main.width;
-		let height = this.cameras.main.height;
 		let loadingText = this.make.text({
 			x: width / 2,
 			y: height / 2 - 50,
@@ -75,7 +85,7 @@ export default class LoadingScene extends Phaser.Scene {
 			//console.log(value);
 			progressBar.clear();
 			progressBar.fillStyle(0xffffff, 1);
-			progressBar.fillRect(250, 280, 300 * value, 30);
+			progressBar.fillRect((width/2) -150, (height/2) - 20, 300 * value, 30);
 			//update the percentage text
 			percentText.setText(Math.floor(value * 100) + '%');
 		});
@@ -83,7 +93,6 @@ export default class LoadingScene extends Phaser.Scene {
 		//listen for file progress
 		this.load.on('load', function (file) {
 			//update the loading file text with file being loaded
-			console.log(file.src);
 			assetText.setText('Loading asset: ' + file.key);
 		});
 
@@ -101,6 +110,7 @@ export default class LoadingScene extends Phaser.Scene {
 
 	create() {
 		//create the logo graphic
-		let logo = this.add.image(400, 300, 'logo');
+		console.log('Starting Menu');
+		this.scene.start('Menu');
 	}
 }

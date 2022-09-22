@@ -1,8 +1,8 @@
-const config = {
+const GameConfig = {
     type: Phaser.AUTO,
     backgroundColor: '#125555',
-    width: 800,
-    height: 600,
+    width: 1920,
+    height: 1080,
     scene: null
 };
-export default config;
+export default GameConfig;
