@@ -38,11 +38,14 @@ class MovePath extends Phaser.Curves.Path {
 		const travelAngle: number = Phaser.Math.Angle.BetweenPoints(point1, point2) * (180/Math.PI);
 		
 		//find turn directions
-		
+
 		//if ang1-travelAngle < 0 clockwise
 		let turn1DIR: boolean = (ang1 - travelAngle < 0);
 		//if travelAngle-ang2 < 0 clockwise
 		const turn2DIR: boolean = (travelAngle - ang2 < 0);
+
+		console.log(turn1DIR);
+		console.log(turn2DIR);
 
 		//assigns the first turning circle center to point1 and the transformation from original point1 to the first turning circle center in CenterTranslation1
 		const CenterTranslation1 = MovePath.FindTurningCircle(point1,ang1,TurnR,turn1DIR);	
@@ -55,26 +58,28 @@ class MovePath extends Phaser.Curves.Path {
 		const interCenterTranslation = point2.clone();
 		interCenterTranslation.subtract(point1);
 
+		console.log("straight angle before");
+		console.log(interCenterTranslation.angle()*(180/Math.PI));
 		this.ellipseTo(50,50,0,interCenterTranslation.angle()*(180/Math.PI)-ang1,false,ang1-90);
 
-		console.log("end:");
-		console.log(interCenterTranslation.angle()*(180/Math.PI)-ang1)
-		console.log("rotation:");
-		console.log(ang1-90);
-		console.log("clockwise?:");
-		console.log(turn1DIR);
 
 		//create the straight section between the two turns
 		const StraightTranslation = interCenterTranslation.clone();
 		StraightTranslation.add(this.getEndPoint());
+		console.log(point2);
 		console.log(StraightTranslation);
 		this.lineTo(StraightTranslation);
 
-		
+		console.log("straight angle after");
+		console.log(interCenterTranslation.angle() * (180 / Math.PI));
 		//create the second elipse curve representing turn2
-		this.ellipseTo(TurnR,TurnR,interCenterTranslation.angle()*(180/Math.PI)-90,ang2-90,!turn2DIR,0);
+		this.ellipseTo(TurnR, TurnR, 0, ang2 - (interCenterTranslation.angle() * (180/Math.PI)), false, (interCenterTranslation.angle() * (180 / Math.PI)) - 90);
 
 		console.log(this.getEndPoint());
+		const TempTangent1 = this.getTangent(0);
+		console.log(TempTangent1.angle()*180/Math.PI);
+		const TempTangent = this.getTangent(1);
+		console.log(TempTangent.angle()*180/Math.PI);
 	}//phaser.math.angle.BetweenPoints(interCenterTranslation,)
 
 	//determines the location of a turning circle
@@ -165,6 +170,10 @@ export default class Ship extends Phaser.GameObjects.Sprite {
 		if (!commands) {
 			this.moveOrderQueue.dequeue();
 			this.TempDisplacement = 0
+			console.log("current coordinates");
+			console.log(this.x);
+			console.log(this.y);
+			this.Move(delta);
 			return;
 		}
 
