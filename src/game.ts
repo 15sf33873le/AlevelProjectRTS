@@ -20,4 +20,3 @@ class Game extends Phaser.Game {
 }
 
 let game = new Game(GameConfig);
-let shiplist = [];

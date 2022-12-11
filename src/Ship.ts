@@ -36,16 +36,12 @@ class MovePath extends Phaser.Curves.Path {
 		
 		//find the angle between the two points
 		const travelAngle: number = Phaser.Math.Angle.BetweenPoints(point1, point2) * (180/Math.PI);
-		console.log(travelAngle);
 		//find turn directions
 
 		//if ang1-travelAngle < 0 clockwise
-		let turn1Clockwise: boolean = (ang1 - travelAngle < 0);
+		let turn1Clockwise: boolean = (ang1 - travelAngle < 0 && ang1 - travelAngle > -180);
 		//if travelAngle-ang2 < 0 clockwise
-		const turn2Clockwise: boolean = (travelAngle - ang2 < 0);
-
-		console.log(turn1Clockwise);
-		console.log(turn2Clockwise);
+		const turn2Clockwise: boolean = (travelAngle - ang2 < 0 && travelAngle - ang2 > -180);
 
 		//assigns the first turning circle center to point1 and the transformation from original point1 to the first turning circle center in CenterTranslation1
 		const CenterTranslation1 = MovePath.FindTurningCircle(point1,ang1,TurnR,turn1Clockwise);	
@@ -139,7 +135,7 @@ export default class Ship extends Phaser.GameObjects.Sprite {
 	public accelCoef = 0;
 	public moveOrderQueue = new Queue();
 	public TurnR = 0;
-	public TempDisplacement: number = 0;
+	public TempDistance: number = 0;
 
 	constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number ) {
 		super(scene, x, y, texture, frame);
@@ -170,11 +166,11 @@ export default class Ship extends Phaser.GameObjects.Sprite {
 		if (this.moveOrderQueue.isEmpty) return;
 		const moveOrder = this.moveOrderQueue.peek();
 		this.UpdateAccelTime(true,delta);
-		this.TempDisplacement = this.TempDisplacement + this.Accelerate() * (delta/1000);
-		const commands = moveOrder.getPointDistance(this.TempDisplacement);
+		this.TempDistance = this.TempDistance + this.Accelerate() * (delta/1000);
+		const commands = moveOrder.getPointDistance(this.TempDistance);
 		if (!commands) {
 			this.moveOrderQueue.dequeue();
-			this.TempDisplacement = 0
+			this.TempDistance = 0
 			console.log("current coordinates");
 			console.log(this.x);
 			console.log(this.y);
