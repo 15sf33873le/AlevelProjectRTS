@@ -36,50 +36,55 @@ class MovePath extends Phaser.Curves.Path {
 		
 		//find the angle between the two points
 		const travelAngle: number = Phaser.Math.Angle.BetweenPoints(point1, point2) * (180/Math.PI);
-		
+		console.log(travelAngle);
 		//find turn directions
 
 		//if ang1-travelAngle < 0 clockwise
-		let turn1DIR: boolean = (ang1 - travelAngle < 0);
+		let turn1Clockwise: boolean = (ang1 - travelAngle < 0);
 		//if travelAngle-ang2 < 0 clockwise
-		const turn2DIR: boolean = (travelAngle - ang2 < 0);
+		const turn2Clockwise: boolean = (travelAngle - ang2 < 0);
 
-		console.log(turn1DIR);
-		console.log(turn2DIR);
+		console.log(turn1Clockwise);
+		console.log(turn2Clockwise);
 
 		//assigns the first turning circle center to point1 and the transformation from original point1 to the first turning circle center in CenterTranslation1
-		const CenterTranslation1 = MovePath.FindTurningCircle(point1,ang1,TurnR,turn1DIR);	
+		const CenterTranslation1 = MovePath.FindTurningCircle(point1,ang1,TurnR,turn1Clockwise);	
 		
 		
 		//assigns the second turning circle center to point2 and the transformation from original point2 to the second turning circle center in CenterTranslation2
-		const CenterTranslation2 = MovePath.FindTurningCircle(point2,ang2,TurnR,turn2DIR);
+		const CenterTranslation2 = MovePath.FindTurningCircle(point2,ang2,TurnR,turn2Clockwise);
 		
 		//find the translation between the two circle centers (point1 and point2)
 		const interCenterTranslation = point2.clone();
 		interCenterTranslation.subtract(point1);
 
-		console.log("straight angle before");
-		console.log(interCenterTranslation.angle()*(180/Math.PI));
-		this.ellipseTo(50,50,0,interCenterTranslation.angle()*(180/Math.PI)-ang1,false,ang1-90);
+		
+		const TransitionRadiusAngle = interCenterTranslation.angle() * (180 / Math.PI) - 90;
+
+		let rotation = 0
+
+		if (!turn1Clockwise && !turn2Clockwise) {
+			rotation = 180;
+		}
+
+
+		//this.ellipseTo(50,50,ang1+90,turn1,true,0);
+
+		//this.ellipseTo(TurnR, TurnR, ang1 - 90, TransitionRadiusAngle, !turn1Clockwise, 0);
+		this.ellipseTo(TurnR, TurnR, ang1 - 90, TransitionRadiusAngle, !turn1Clockwise, rotation);
 
 
 		//create the straight section between the two turns
 		const StraightTranslation = interCenterTranslation.clone();
 		StraightTranslation.add(this.getEndPoint());
-		console.log(point2);
-		console.log(StraightTranslation);
 		this.lineTo(StraightTranslation);
 
-		console.log("straight angle after");
-		console.log(interCenterTranslation.angle() * (180 / Math.PI));
 		//create the second elipse curve representing turn2
-		this.ellipseTo(TurnR, TurnR, 0, ang2 - (interCenterTranslation.angle() * (180/Math.PI)), false, (interCenterTranslation.angle() * (180 / Math.PI)) - 90);
+
+		//this.ellipseTo(TurnR, TurnR, TransitionRadiusAngle, ang2 - 90, !turn2Clockwise, 0);
+		this.ellipseTo(TurnR, TurnR, TransitionRadiusAngle, ang2 - 90, !turn1Clockwise, rotation);
 
 		console.log(this.getEndPoint());
-		const TempTangent1 = this.getTangent(0);
-		console.log(TempTangent1.angle()*180/Math.PI);
-		const TempTangent = this.getTangent(1);
-		console.log(TempTangent.angle()*180/Math.PI);
 	}//phaser.math.angle.BetweenPoints(interCenterTranslation,)
 
 	//determines the location of a turning circle
