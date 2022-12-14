@@ -29,25 +29,25 @@ export default class GameRun extends Phaser.Scene {
 		console.log(this.shiplist[0]);
 		
 		const point1 = new Phaser.Math.Vector2(200,200);
-		const ang1 = -115;
-		const point2 = new Phaser.Math.Vector2(400,100);
-		const ang2 = 0;
+		const ang1 = -50;
+		const point2 = new Phaser.Math.Vector2(800,600);
+		const ang2 = 90;
 		
 		this.shiplist[0].NewPath(point1,ang1,point2,ang2);
 
-		const point3 = new Phaser.Math.Vector2(400,100);
-		const ang3 = 0;
-		const point4 = new Phaser.Math.Vector2(900,800);
-		const ang4 = 70;
+		const path4Point1 = new Phaser.Math.Vector2(800, 600);
+		const path4Ang1 = 90;
+		const path4Point2 = new Phaser.Math.Vector2(1300, 75);
+		const path4Ang2 = -140;
 
-		this.shiplist[0].NewPath(point3,ang3,point4,ang4);
+		this.shiplist[0].NewPath(path4Point1, path4Ang1, path4Point2, path4Ang2);
 
-		const path3Point1 = new Phaser.Math.Vector2(900,800);
-		const path3Ang1 = 70;
-		const path3Point2 = new Phaser.Math.Vector2(300,400);
-		const path3Ang2 = -80;
+		const path5Point1 = new Phaser.Math.Vector2(1300,75);
+		const path5Ang1 = -140;
+		const path5Point2 = new Phaser.Math.Vector2(1000,800);
+		const path5Ang2 = 30;
 
-		this.shiplist[0].NewPath(path3Point1,path3Ang1,path3Point2,path3Ang2);
+		this.shiplist[0].NewPath(path5Point1, path5Ang1, path5Point2, path5Ang2);
 
 		graphics = this.add.graphics();
 		console.log(this);

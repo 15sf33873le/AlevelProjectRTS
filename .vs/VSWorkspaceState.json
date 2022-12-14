@@ -3,10 +3,8 @@
     "",
     "\\dist",
     "\\dist\\assets",
-    "\\dist\\assets\\ships",
-    "\\dist\\assets\\ships\\TestShip",
     "\\src"
   ],
-  "SelectedNode": "\\src\\Ship.ts",
+  "SelectedNode": "\\src\\game.ts",
   "PreviewInSolutionExplorer": false
 }
