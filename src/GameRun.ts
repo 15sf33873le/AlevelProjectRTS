@@ -29,21 +29,21 @@ export default class GameRun extends Phaser.Scene {
 		console.log(this.shiplist[0]);
 		
 		const point1 = new Phaser.Math.Vector2(200,200);
-		const ang1 = -150;
+		const ang1 = -50;
 		const point2 = new Phaser.Math.Vector2(800,600);
-		const ang2 = 92.75456;
+		const ang2 = -30;
 		
 		this.shiplist[0].NewPath(point1,ang1,point2,ang2);
 
 		const path4Point1 = new Phaser.Math.Vector2(800, 600);
-		const path4Ang1 = 92.75456;
+		const path4Ang1 = -30;
 		const path4Point2 = new Phaser.Math.Vector2(1300, 75);
 		const path4Ang2 = -1;
 
 		this.shiplist[0].NewPath(path4Point1, path4Ang1, path4Point2, path4Ang2);
 
 		const path5Point1 = new Phaser.Math.Vector2(1300,75);
-		const path5Ang1 = -140;
+		const path5Ang1 = -1;
 		const path5Point2 = new Phaser.Math.Vector2(1301,76);
 		const path5Ang2 = 179.99999999;
 

@@ -57,31 +57,33 @@ class MovePath extends Phaser.Curves.Path {
 		interCenterTranslation.subtract(point1);
 		
 
-		let rotation = 0
+		let rotation1 = 0
+		let rotation2 = 0
 
 		if (turn1Clockwise) {
-			if (turn2Clockwise) {
-			}
-			else {
+			if (!turn2Clockwise) {
 				//transverse with a right first turn
-				const length = interCenterTranslation.length();
-				const angle = Math.atan((2*TurnR)/length);
-
-				interCenterTranslation.rotate(-angle);
-				interCenterTranslation.scale(Math.cos(angle));
-			}
-		}
-		else {
-			if (turn2Clockwise) {
-				//transverse with a left first turn
+				rotation2 = 180;
 				const length = interCenterTranslation.length();
 				const angle = Math.atan((2*TurnR)/length);
 
 				interCenterTranslation.rotate(angle);
 				interCenterTranslation.scale(Math.cos(angle));
 			}
+		}
+		else {
+			if (turn2Clockwise) {
+				//transverse with a left first turn
+				rotation1 = 180;
+				const length = interCenterTranslation.length();
+				const angle = Math.atan((2*TurnR)/length);
+
+				interCenterTranslation.rotate(-angle);
+				interCenterTranslation.scale(Math.cos(angle));
+			}
 			else {
-				rotation = 180;
+				rotation1 = 180;
+				rotation2 = 180;
 			}
 		}
 
@@ -90,7 +92,7 @@ class MovePath extends Phaser.Curves.Path {
 
 		
 
-		this.ellipseTo(TurnR, TurnR, ang1 - 90, TransitionRadiusAngle, !turn1Clockwise, rotation);
+		this.ellipseTo(TurnR, TurnR, ang1 - 90, TransitionRadiusAngle, !turn1Clockwise, rotation1);
 
 
 		//create the straight section between the two turns
@@ -100,8 +102,9 @@ class MovePath extends Phaser.Curves.Path {
 
 		//create the second elipse curve representing turn2
 
-		//this.ellipseTo(TurnR, TurnR, TransitionRadiusAngle, ang2 - 90, !turn2Clockwise, 0);
-		this.ellipseTo(TurnR, TurnR, TransitionRadiusAngle, ang2 - 90, !turn1Clockwise, rotation);
+		
+		this.ellipseTo(TurnR, TurnR, TransitionRadiusAngle, ang2 - 90, !turn2Clockwise, rotation2);
+		
 
 		console.log(this.getEndPoint());
 	}//phaser.math.angle.BetweenPoints(interCenterTranslation,)
