@@ -51,22 +51,45 @@ class MovePath extends Phaser.Curves.Path {
 		const CenterTranslation2 = MovePath.FindTurningCircle(point2,ang2,TurnR,turn2Clockwise);
 		
 		//find the translation between the two circle centers (point1 and point2)
+		
+
 		const interCenterTranslation = point2.clone();
 		interCenterTranslation.subtract(point1);
-
 		
-		const TransitionRadiusAngle = interCenterTranslation.angle() * (180 / Math.PI) - 90;
 
 		let rotation = 0
 
-		if (!turn1Clockwise && !turn2Clockwise) {
-			rotation = 180;
+		if (turn1Clockwise) {
+			if (turn2Clockwise) {
+			}
+			else {
+				//transverse with a right first turn
+				const length = interCenterTranslation.length();
+				const angle = Math.atan((2*TurnR)/length);
+
+				interCenterTranslation.rotate(-angle);
+				interCenterTranslation.scale(Math.cos(angle));
+			}
+		}
+		else {
+			if (turn2Clockwise) {
+				//transverse with a left first turn
+				const length = interCenterTranslation.length();
+				const angle = Math.atan((2*TurnR)/length);
+
+				interCenterTranslation.rotate(angle);
+				interCenterTranslation.scale(Math.cos(angle));
+			}
+			else {
+				rotation = 180;
+			}
 		}
 
 
-		//this.ellipseTo(50,50,ang1+90,turn1,true,0);
+		const TransitionRadiusAngle = interCenterTranslation.angle() * (180 / Math.PI) - 90;
 
-		//this.ellipseTo(TurnR, TurnR, ang1 - 90, TransitionRadiusAngle, !turn1Clockwise, 0);
+		
+
 		this.ellipseTo(TurnR, TurnR, ang1 - 90, TransitionRadiusAngle, !turn1Clockwise, rotation);
 
 
