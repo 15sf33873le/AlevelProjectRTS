@@ -1,0 +1,5 @@
+{
+  "ID": 0,
+  "name": "player",
+  "pendingShips": ["TestShip","TestShip","TestShip"]
+}

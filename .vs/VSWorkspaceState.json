@@ -5,8 +5,8 @@
     "\\dist\\assets",
     "\\dist\\assets\\ships",
     "\\dist\\assets\\ships\\TestShip",
+    "\\dist\\assets\\TestScenario",
     "\\src"
   ],
-  "SelectedNode": "\\src\\Ship.ts",
   "PreviewInSolutionExplorer": false
 }

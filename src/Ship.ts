@@ -26,11 +26,14 @@ class Queue {
 	get isEmpty() {
 		return this.length === 0;
 	}
+	peekLast() {
+		return this.elements[this.tail-1];
+    }
 }
 
 class MovePath extends Phaser.Curves.Path {
 
-	constructor(point1: Phaser.Math.Vector2, ang1: number, point2: Phaser.Math.Vector2, ang2: number, TurnR: number) {
+	constructor(TurnR: number, point1: Phaser.Math.Vector2, ang1: number, point2: Phaser.Math.Vector2, ang2?: number) {
 		//call the constructor from the Path class
 		super(point1.x,point1.y);
 		
@@ -40,11 +43,22 @@ class MovePath extends Phaser.Curves.Path {
 
 		//if ang1-travelAngle < 0 clockwise
 		let turn1Clockwise: boolean = (ang1 - travelAngle < 0 && ang1 - travelAngle > -180);
-		//if travelAngle-ang2 < 0 clockwise
-		const turn2Clockwise: boolean = (travelAngle - ang2 < 0 && travelAngle - ang2 > -180);
 
 		//assigns the first turning circle center to point1 and the transformation from original point1 to the first turning circle center in CenterTranslation1
-		const CenterTranslation1 = MovePath.FindTurningCircle(point1,ang1,TurnR,turn1Clockwise);	
+		const CenterTranslation1 = MovePath.FindTurningCircle(point1, ang1, TurnR, turn1Clockwise);
+
+		if (typeof ang2 === "undefined") {
+			const hypot = point1.distance(point2);
+			const impAngle = Math.asin(TurnR / hypot);
+			const fullAngle = (Phaser.Math.Angle.BetweenPoints(point1, point2) + impAngle) * (180 / Math.PI);
+			this.ellipseTo(TurnR, TurnR, ang1 - 90, fullAngle - 90, !turn1Clockwise);
+			this.lineTo(point2);
+			return
+        }
+
+
+		//if travelAngle-ang2 < 0 clockwise
+		const turn2Clockwise: boolean = (travelAngle - ang2 < 0 && travelAngle - ang2 > -180);	
 		
 		
 		//assigns the second turning circle center to point2 and the transformation from original point2 to the second turning circle center in CenterTranslation2
@@ -209,11 +223,26 @@ export default class Ship extends Phaser.GameObjects.Sprite {
 		
 		this.setRotation(commands[1].angle()+Math.PI/2);
 	}
-	NewPath(point1, ang1, point2, ang2): void{
-		const PendingOrder = new MovePath(point1,ang1,point2,ang2,this.TurnR)
-		let drawnPath = new Phaser.GameObjects.Graphics(this.scene);
-		drawnPath.lineStyle(5, 0xFF00FF, 1.0);
-		PendingOrder.draw(drawnPath);
+	NewPath(point2, ang2?): void{
+
+		let startPos: Phaser.Math.Vector2;
+		let startAngle: number;
+
+		if (this.moveOrderQueue.isEmpty) {
+			startPos = new Phaser.Math.Vector2(this.x, this.y);
+			startAngle = this.angle;
+		} else {
+			const lastMove = this.moveOrderQueue.peekLast()
+			startPos = lastMove.getEndPoint();
+			startAngle = lastMove.getTangent(1).angle() * (180/Math.PI);
+        }
+
+		let PendingOrder;
+		if (typeof ang2 === "undefined") {
+			PendingOrder = new MovePath(this.TurnR, startPos, startAngle, point2)
+		} else {
+			PendingOrder = new MovePath(this.TurnR, startPos, startAngle, point2, ang2);
+		}
 		this.moveOrderQueue.enqueue(PendingOrder);
 	}
 	update(time, delta) {
@@ -221,7 +250,7 @@ export default class Ship extends Phaser.GameObjects.Sprite {
 	}
 }
 
-Phaser.GameObjects.GameObjectFactory.register('testship', function (this: Phaser.GameObjects.GameObjectFactory, x, y, key, frame) {
+Phaser.GameObjects.GameObjectFactory.register('TestShip', function (this: Phaser.GameObjects.GameObjectFactory, x, y, key, frame) {
 		console.log("making testship");
 		const testship = new Ship(this.scene, x, y, key, frame);
 		testship.setOrigin(0.5, 0.5);
