@@ -5,8 +5,7 @@ Thumbs.db
 *.suo
 *.sublime-project
 *.sublime-workspace
-slnx.sqlite
-VSWorkspaceState.json
+.vs/
 
 # Vendors
 node_modules/
