@@ -23,41 +23,24 @@ export default class GameRun extends Phaser.Scene {
 
 	public shiplist = [];
 	public playerlist = [];
-	public 
+	public MainPlayer;
 
 	create() {
 
 		this.playerlist.push(new Player(this.cache.json.get('PlayerJSON')));
 		this.playerlist.push(new Player(this.cache.json.get("AIJSON")));
-		console.log('gameRun active');
-
-		this.SpawnShips();
-		const point1 = new Phaser.Math.Vector2(200,200);
-		const ang1 = -50;
-
-		this.shiplist[0].NewPath(point1, ang1);
-
-		const point2 = new Phaser.Math.Vector2(350, 321);
-		const ang2 = 70;
-
-		this.shiplist[0].NewPath(point2, ang2);
-
-		const point3 = new Phaser.Math.Vector2(500, 321);
-
-		this.shiplist[1].NewPath(point3);
-
-		const point4 = new Phaser.Math.Vector2(700, 361);
-		const ang3 = -70;
-
-		this.shiplist[0].NewPath(point4, ang3);
 
 
+
+		for (let i = 0; i < this.playerlist.length; i++) {
+			if (this.playerlist[i].ID == 0) {
+				this.MainPlayer = this.playerlist[i];
+			}
+		}
 
 		//this.shiplist[0].NewPath(path5Point1, path5Ang1, path5Point2, path5Ang2);
 
 		graphics = this.add.graphics();
-		console.log(this);
-		console.log(this.playerlist);
 
 
 		//set up moust inputs
@@ -66,12 +49,29 @@ export default class GameRun extends Phaser.Scene {
 
 		//mouse events
 		this.input.on("pointerup", function (pointer) {
-			console.log(pointer);
-			const startPoint = new Phaser.Math.Vector2(pointer.downX, pointer.downY);
+			if (typeof this.scene.MainPlayer.selectedShip === "undefined") return;
+			if (!pointer.event.shiftKey) {
+				this.scene.MainPlayer.selectedShip.clearPaths();
+			}
 			const endPoint = new Phaser.Math.Vector2(pointer.upX, pointer.upY)
-			const angle = Phaser.Math.Angle.BetweenPoints(endPoint, startPoint);
-			this.scene.shiplist[2].NewPath(startPoint, angle);
+			if (pointer.getDuration() < 150) {
+				this.scene.MainPlayer.selectedShip.NewPath(endPoint);
+				return;
+            }
+			const startPoint = new Phaser.Math.Vector2(pointer.downX, pointer.downY);
+			const angle = Phaser.Math.Angle.BetweenPoints(startPoint, endPoint) * (180 / Math.PI);
+			this.scene.MainPlayer.selectedShip.NewPath(startPoint, angle);
 		});
+
+		//generic keybinds
+		this.input.keyboard.on("keydown", function (event) {
+			switch (event.code) {
+				case "KeyX":
+					this.scene.MainPlayer.clearSelected();
+            }
+		});
+
+		this.SpawnShips();
 
 	}
 
@@ -95,8 +95,7 @@ export default class GameRun extends Phaser.Scene {
 						switch (event.code) {
 							case "Digit" + shipnumstring:
 							case "Numpad" + shipnumstring:
-								console.log(shipnumstring + " pressed");
-								this.scene.playerlist[0].selectedShip = this.scene.playerlist[0].controledShips[n];
+								this.scene.playerlist[i].selectedShip = this.scene.playerlist[i].controledShips[n];
 							break;
                         }
 					});
@@ -113,7 +112,6 @@ export default class GameRun extends Phaser.Scene {
 		graphics.lineStyle(2, 0xffffff, 1);
 
 		if (typeof this.playerlist[0].selectedShip !== "undefined") {
-			console.log("trying");
 			graphics.beginPath();
 			graphics.arc(this.playerlist[0].selectedShip.x, this.playerlist[0].selectedShip.y, 40, 0.3927, 1.1781);
 			graphics.strokePath();
@@ -131,6 +129,14 @@ export default class GameRun extends Phaser.Scene {
 
 		if (!this.shiplist[0].moveOrderQueue.isEmpty) {
 			const lineToDraw = this.shiplist[0].moveOrderQueue.peek();
+			lineToDraw.draw(graphics);
+		}
+		if (!this.shiplist[1].moveOrderQueue.isEmpty) {
+			const lineToDraw = this.shiplist[1].moveOrderQueue.peek();
+			lineToDraw.draw(graphics);
+		}
+		if (!this.shiplist[2].moveOrderQueue.isEmpty) {
+			const lineToDraw = this.shiplist[2].moveOrderQueue.peek();
 			lineToDraw.draw(graphics);
 		}
 	}

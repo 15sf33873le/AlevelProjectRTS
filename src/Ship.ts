@@ -28,48 +28,45 @@ class Queue {
 	}
 	peekLast() {
 		return this.elements[this.tail-1];
+	}
+	clear() {
+		const n = this.length
+		for (let i = 0; i < n; i++) {
+			this.dequeue();
+        }
     }
 }
 
 class MovePath extends Phaser.Curves.Path {
 
-	constructor(TurnR: number, point1: Phaser.Math.Vector2, ang1: number, point2: Phaser.Math.Vector2, ang2?: number) {
+	constructor(TurnR: number, point1: Phaser.Math.Vector2, ang1: number, point2: Phaser.Math.Vector2, ang2: number) {
 		//call the constructor from the Path class
-		super(point1.x,point1.y);
-		
+		super(point1.x, point1.y);
+
 		//find the angle between the two points
-		const travelAngle: number = Phaser.Math.Angle.BetweenPoints(point1, point2) * (180/Math.PI);
+		const travelAngle: number = Phaser.Math.Angle.BetweenPoints(point1, point2) * (180 / Math.PI);
 		//find turn directions
 
+
+
 		//if ang1-travelAngle < 0 clockwise
-		let turn1Clockwise: boolean = (ang1 - travelAngle < 0 && ang1 - travelAngle > -180);
+		let turn1Clockwise: boolean = !((travelAngle + 180) - (ang1 + 180) < 0 || (travelAngle + 180) - (ang1 + 180) > 180);
 
 		//assigns the first turning circle center to point1 and the transformation from original point1 to the first turning circle center in CenterTranslation1
 		const CenterTranslation1 = MovePath.FindTurningCircle(point1, ang1, TurnR, turn1Clockwise);
 
-		if (typeof ang2 === "undefined") {
-			const hypot = point1.distance(point2);
-			const impAngle = Math.asin(TurnR / hypot);
-			const fullAngle = (Phaser.Math.Angle.BetweenPoints(point1, point2) + impAngle) * (180 / Math.PI);
-			this.ellipseTo(TurnR, TurnR, ang1 - 90, fullAngle - 90, !turn1Clockwise);
-			this.lineTo(point2);
-			return
-        }
-
-
 		//if travelAngle-ang2 < 0 clockwise
-		const turn2Clockwise: boolean = (travelAngle - ang2 < 0 && travelAngle - ang2 > -180);	
-		
-		
+		let turn2Clockwise: boolean = ((travelAngle + 180) - (ang2 + 180) < 0 || (travelAngle + 180) - (ang2 + 180) > 180);
+
 		//assigns the second turning circle center to point2 and the transformation from original point2 to the second turning circle center in CenterTranslation2
-		const CenterTranslation2 = MovePath.FindTurningCircle(point2,ang2,TurnR,turn2Clockwise);
-		
+		const CenterTranslation2 = MovePath.FindTurningCircle(point2, ang2, TurnR, turn2Clockwise);
+
 		//find the translation between the two circle centers (point1 and point2)
-		
+
 
 		const interCenterTranslation = point2.clone();
 		interCenterTranslation.subtract(point1);
-		
+
 
 		let rotation1 = 0
 		let rotation2 = 0
@@ -79,7 +76,7 @@ class MovePath extends Phaser.Curves.Path {
 				//transverse with a right first turn
 				rotation2 = 180;
 				const length = interCenterTranslation.length();
-				const angle = Math.atan((2*TurnR)/length);
+				const angle = Math.atan((2 * TurnR) / length);
 
 				interCenterTranslation.rotate(angle);
 				interCenterTranslation.scale(Math.cos(angle));
@@ -90,7 +87,7 @@ class MovePath extends Phaser.Curves.Path {
 				//transverse with a left first turn
 				rotation1 = 180;
 				const length = interCenterTranslation.length();
-				const angle = Math.atan((2*TurnR)/length);
+				const angle = Math.atan((2 * TurnR) / length);
 
 				interCenterTranslation.rotate(-angle);
 				interCenterTranslation.scale(Math.cos(angle));
@@ -102,12 +99,15 @@ class MovePath extends Phaser.Curves.Path {
 		}
 
 
+
+
 		const TransitionRadiusAngle = interCenterTranslation.angle() * (180 / Math.PI) - 90;
 
-		
-
-		this.ellipseTo(TurnR, TurnR, ang1 - 90, TransitionRadiusAngle, !turn1Clockwise, rotation1);
-
+		const PathDeviance1 = Math.abs((ang1 - 90) - (TransitionRadiusAngle));
+		const PathDeviance2 = Math.abs(Math.abs((ang1 - 90) - (TransitionRadiusAngle)) - 360);
+		if (PathDeviance1 > 10 && PathDeviance2 > 10) {
+			this.ellipseTo(TurnR, TurnR, ang1 - 90, TransitionRadiusAngle, !turn1Clockwise, rotation1);
+		}
 
 		//create the straight section between the two turns
 		const StraightTranslation = interCenterTranslation.clone();
@@ -115,12 +115,12 @@ class MovePath extends Phaser.Curves.Path {
 		this.lineTo(StraightTranslation);
 
 		//create the second elipse curve representing turn2
+		const Path2Deviance1 = Math.abs((TransitionRadiusAngle) - (ang2 - 90));
+		const Path2Deviance2 = Math.abs(Math.abs((TransitionRadiusAngle) - (ang2 - 90)) - 360);
+		if (Path2Deviance1 > 10 && Path2Deviance2 > 10) {
+			this.ellipseTo(TurnR, TurnR, TransitionRadiusAngle, ang2 - 90, !turn2Clockwise, rotation2);
+		}
 
-		
-		this.ellipseTo(TurnR, TurnR, TransitionRadiusAngle, ang2 - 90, !turn2Clockwise, rotation2);
-		
-
-		console.log(this.getEndPoint());
 	}//phaser.math.angle.BetweenPoints(interCenterTranslation,)
 
 	//determines the location of a turning circle
@@ -211,9 +211,6 @@ export default class Ship extends Phaser.GameObjects.Sprite {
 		if (!commands) {
 			this.moveOrderQueue.dequeue();
 			this.TempDistance = 0
-			console.log("current coordinates");
-			console.log(this.x);
-			console.log(this.y);
 			this.Move(delta);
 			return;
 		}
@@ -230,32 +227,33 @@ export default class Ship extends Phaser.GameObjects.Sprite {
 
 		if (this.moveOrderQueue.isEmpty) {
 			startPos = new Phaser.Math.Vector2(this.x, this.y);
-			startAngle = this.angle;
+			startAngle = this.angle - 90;
 		} else {
 			const lastMove = this.moveOrderQueue.peekLast()
 			startPos = lastMove.getEndPoint();
 			startAngle = lastMove.getTangent(1).angle() * (180/Math.PI);
         }
 
-		let PendingOrder;
-		if (typeof ang2 === "undefined") {
-			PendingOrder = new MovePath(this.TurnR, startPos, startAngle, point2)
-		} else {
-			PendingOrder = new MovePath(this.TurnR, startPos, startAngle, point2, ang2);
-		}
+		if (typeof ang2 == "undefined") {
+			ang2 = Phaser.Math.Angle.Between(this.x, this.y, point2.x, point2.y) * (180/Math.PI);
+        }
+
+		const PendingOrder = new MovePath(this.TurnR, startPos, startAngle, point2, ang2);
 		this.moveOrderQueue.enqueue(PendingOrder);
 	}
+	clearPaths(): void {
+		this.moveOrderQueue.clear();
+		this.TempDistance = 0;
+    }
 	update(time, delta) {
 		this.Move(delta);
 	}
 }
 
 Phaser.GameObjects.GameObjectFactory.register('TestShip', function (this: Phaser.GameObjects.GameObjectFactory, x, y, key, frame) {
-		console.log("making testship");
 		const testship = new Ship(this.scene, x, y, key, frame);
 		testship.setOrigin(0.5, 0.5);
 		testship.setScale(0.2);
-		console.log(testship);
 		this.displayList.add(testship);
 		this.updateList.add(testship);
 		this.scene.events.on('update', testship.update, testship);

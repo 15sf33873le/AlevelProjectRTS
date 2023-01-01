@@ -12,4 +12,8 @@ export default class Player {
     constructor(JSONconfig) {
         return Object.assign(this,JSONconfig);
     }
+
+    clearSelected() {
+        this.selectedShip = undefined;
+    }
 }
