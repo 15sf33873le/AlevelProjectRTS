@@ -103,6 +103,7 @@ class MovePath extends Phaser.Curves.Path {
 
 		const TransitionRadiusAngle = interCenterTranslation.angle() * (180 / Math.PI) - 90;
 
+		//create the first ellipse curve
 		const PathDeviance1 = Math.abs((ang1 - 90) - (TransitionRadiusAngle));
 		const PathDeviance2 = Math.abs(Math.abs((ang1 - 90) - (TransitionRadiusAngle)) - 360);
 		if (PathDeviance1 > 10 && PathDeviance2 > 10) {
@@ -235,7 +236,7 @@ export default class Ship extends Phaser.GameObjects.Sprite {
         }
 
 		if (typeof ang2 == "undefined") {
-			ang2 = Phaser.Math.Angle.Between(this.x, this.y, point2.x, point2.y) * (180/Math.PI);
+			ang2 = Phaser.Math.Angle.BetweenPoints(startPos, point2) * (180 / Math.PI);
         }
 
 		const PendingOrder = new MovePath(this.TurnR, startPos, startAngle, point2, ang2);
