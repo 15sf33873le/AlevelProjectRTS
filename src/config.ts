@@ -3,6 +3,10 @@ const GameConfig = {
     backgroundColor: '#125555',
     width: 1920,
     height: 1080,
-    scene: null
+	scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
+	scene: null
 };
 export default GameConfig;

@@ -8,7 +8,6 @@ import GameRun from './GameRun';
 class Game extends Phaser.Game {
 	constructor(GameConfig) {
 		super(GameConfig);
-
 		//add scenes
 		this.scene.add('Loading', LoadingScene);
 		this.scene.add('Menu', MenuScene);
@@ -20,4 +19,4 @@ class Game extends Phaser.Game {
 	}
 }
 
-const game = new Game(GameConfig);
+let game = new Game(GameConfig);

@@ -37,6 +37,15 @@ export default class LoadingScene extends Phaser.Scene {
 			this.load.image('logo'+i, 'assets/phaser3-logo.png');
 		}
 		
+		//load TestShip
+		this.load.spritesheet("TestShipSpritesheet", "assets/ships/TestShip/TestShipSheet.png", { frameWidth: 140, frameHeight: 340 });
+		this.load.json("TestShipJSON", "assets/ships/TestShip/TestShip.JSON");
+
+		//load the TestScenario
+		this.load.json("PlayerJSON", "assets/TestScenario/Player.JSON");
+		this.load.json("AIJSON", "assets/TestScenario/AI.JSON");
+		this.load.json("SpawnLocations", "assets/TestScenario/SpawnLocations.JSON");
+
 		//create the loading progress bar
 		let progressBar = this.add.graphics();
 		let progressBox = this.add.graphics();

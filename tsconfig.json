@@ -1,8 +1,8 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "moduleResolution": "node"
-    },
+  "compilerOptions": {
+    "target": "es5",
+    "moduleResolution": "node"
+  },
     "include": [
         "./src/**/*"
     ]

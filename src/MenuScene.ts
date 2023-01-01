@@ -62,4 +62,8 @@ export default class MenuScene extends Phaser.Scene {
 				this.scene.launch('Controls');
 			});
 	}
+
+	update() {
+		console.log("still going");
+    }
 }
